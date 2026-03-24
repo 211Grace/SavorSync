@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0A0A1A;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-galaxy {
+    background: linear-gradient(135deg, #0A0A1A 0%, #2D1B4E 50%, #6C4AB6 100%);
+  }
+  .bg-stardust {
+    background: radial-gradient(circle at center, rgba(108,74,182,0.2) 0%, rgba(10,10,26,1) 100%);
+  }
+}

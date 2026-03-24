@@ -1,0 +1,33 @@
+<div class="min-h-screen flex items-center justify-center py-12 px-4">
+  <div class="max-w-md w-full bg-space-black/50 backdrop-blur-sm p-8 rounded-2xl border border-nebula-violet/30">
+    <h2 class="text-3xl font-display text-star-white text-center">Sign in to SavorSync</h2>
+    <p class="mt-2 text-center text-sm text-star-white/60">
+      Or <a routerLink="/register" class="font-medium text-nebula-violet hover:text-cosmic-blue">create a new account</a>
+    </p>
+    
+    <app-error-message [message]="errorMessage"></app-error-message>
+    
+    <form class="mt-8 space-y-6" (ngSubmit)="onSubmit()">
+      <div class="space-y-4">
+        <div>
+          <input id="email" name="email" type="email" [(ngModel)]="email" required
+            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-nebula-violet/30 bg-space-black/50 text-star-white placeholder-star-white/40 focus:outline-none focus:ring-nebula-violet focus:border-nebula-violet"
+            placeholder="Email address">
+        </div>
+        <div>
+          <input id="password" name="password" type="password" [(ngModel)]="password" required
+            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-nebula-violet/30 bg-space-black/50 text-star-white placeholder-star-white/40 focus:outline-none focus:ring-nebula-violet focus:border-nebula-violet"
+            placeholder="Password">
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" [disabled]="isLoading"
+          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-nebula-violet hover:bg-cosmic-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nebula-violet disabled:opacity-50">
+          <app-loading-spinner *ngIf="isLoading; else buttonText"></app-loading-spinner>
+          <ng-template #buttonText>Sign in</ng-template>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
