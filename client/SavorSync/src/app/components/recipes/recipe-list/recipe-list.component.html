@@ -1,1 +1,136 @@
-<p>recipe-list works!</p>
+<div class="min-h-screen pt-20">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a routerLink="/" class="inline-flex items-center gap-2 text-nebula-violet hover:text-cosmic-blue transition">
+        <i class="bi bi-arrow-left"></i> Back to Home
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-display text-star-white mb-2">All Recipes</h1>
+      <p class="text-star-white/60">Discover our collection of perfectly paired recipes</p>
+    </div>
+
+    <!-- Active Filters Badges -->
+    <div *ngIf="getFilterCount() > 0" class="flex flex-wrap gap-2 mb-4">
+      <span *ngIf="searchQuery"
+        class="px-3 py-1 bg-nebula-violet/20 rounded-full text-nebula-violet text-sm flex items-center gap-1">
+        Search: {{ searchQuery }}
+        <button (click)="searchQuery = ''; applyFilters()" class="hover:text-star-white">✕</button>
+      </span>
+      <span *ngIf="selectedMood"
+        class="px-3 py-1 bg-nebula-violet/20 rounded-full text-nebula-violet text-sm flex items-center gap-1">
+        Mood: {{ selectedMood }}
+        <button (click)="selectedMood = ''; applyFilters()" class="hover:text-star-white">✕</button>
+      </span>
+      <span *ngIf="selectedCuisine"
+        class="px-3 py-1 bg-nebula-violet/20 rounded-full text-nebula-violet text-sm flex items-center gap-1">
+        Cuisine: {{ selectedCuisine }}
+        <button (click)="selectedCuisine = ''; applyFilters()" class="hover:text-star-white">✕</button>
+      </span>
+      <span *ngIf="selectedDifficulty"
+        class="px-3 py-1 bg-nebula-violet/20 rounded-full text-nebula-violet text-sm flex items-center gap-1">
+        Difficulty: {{ selectedDifficulty }}
+        <button (click)="selectedDifficulty = ''; applyFilters()" class="hover:text-star-white">✕</button>
+      </span>
+      <span *ngIf="maxTime > 0"
+        class="px-3 py-1 bg-nebula-violet/20 rounded-full text-nebula-violet text-sm flex items-center gap-1">
+        Max Time: {{ maxTime }} min
+        <button (click)="maxTime = 0; applyFilters()" class="hover:text-star-white">✕</button>
+      </span>
+      <button (click)="clearFilters()" class="px-3 py-1 text-star-white/60 hover:text-star-white text-sm">
+        Clear all
+      </button>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="bg-space-black/50 rounded-2xl p-6 mb-8 border border-nebula-violet/30">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- Search Input -->
+        <div class="lg:col-span-2">
+          <div class="relative">
+            <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-star-white/40"></i>
+            <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()"
+              placeholder="Search by name or description..."
+              class="w-full pl-10 pr-4 py-2 rounded-lg bg-space-black border border-nebula-violet/30 text-star-white placeholder-star-white/40 focus:outline-none focus:border-nebula-violet">
+          </div>
+        </div>
+
+        <!-- Mood Filter -->
+        <select [(ngModel)]="selectedMood" (ngModelChange)="applyFilters()"
+          class="px-4 py-2 rounded-lg bg-space-black border border-nebula-violet/30 text-star-white focus:outline-none focus:border-nebula-violet">
+          <option value="">All Moods 🎵</option>
+          <option *ngFor="let mood of moods" [value]="mood">{{ mood | titlecase }}</option>
+        </select>
+
+        <!-- Cuisine Filter -->
+        <select [(ngModel)]="selectedCuisine" (ngModelChange)="applyFilters()"
+          class="px-4 py-2 rounded-lg bg-space-black border border-nebula-violet/30 text-star-white focus:outline-none focus:border-nebula-violet">
+          <option value="">All Cuisines 🍽️</option>
+          <option *ngFor="let cuisine of cuisines" [value]="cuisine">{{ cuisine }}</option>
+        </select>
+
+        <!-- Difficulty Filter -->
+        <select [(ngModel)]="selectedDifficulty" (ngModelChange)="applyFilters()"
+          class="px-4 py-2 rounded-lg bg-space-black border border-nebula-violet/30 text-star-white focus:outline-none focus:border-nebula-violet">
+          <option value="">All Difficulties 📊</option>
+          <option *ngFor="let diff of difficulties" [value]="diff">{{ diff | titlecase }}</option>
+        </select>
+      </div>
+
+   <!-- Time Filter & Sort -->
+<div class="flex flex-wrap items-center justify-between gap-4 mt-4">
+  <div class="flex items-center gap-4">
+    <span class="text-star-white/60 text-sm">⏱️ Max time:</span>
+    <input type="range" [(ngModel)]="maxTime" (ngModelChange)="applyFilters()" min="0" max="180" step="15" class="w-40">
+    <span class="text-star-white/60 text-sm">{{ maxTime || 'Any' }} min</span>
+  </div>
+
+  <div class="flex items-center gap-2 flex-wrap">
+  <span class="text-star-white/60 text-sm">Sort by:</span>
+  <button (click)="toggleSort('name')" 
+    [ngClass]="{'bg-nebula-violet/30': sortBy === 'name'}"
+    class="px-3 py-1 rounded-lg text-sm transition">
+    Name
+  </button>
+  <button (click)="toggleSort('time')" 
+    [ngClass]="{'bg-nebula-violet/30': sortBy === 'time'}"
+    class="px-3 py-1 rounded-lg text-sm transition">
+    Time
+  </button>
+  <button (click)="toggleSort('difficulty')" 
+    [ngClass]="{'bg-nebula-violet/30': sortBy === 'difficulty'}"
+    class="px-3 py-1 rounded-lg text-sm transition">
+    Difficulty
+  </button>
+</div>
+</div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="mb-4 text-star-white/60">
+      Found {{ filteredRecipes.length }} recipe(s)
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-4 border-nebula-violet border-t-transparent"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredRecipes.length === 0" class="text-center py-20">
+      <i class="bi bi-emoji-frown text-6xl text-star-white/30"></i>
+      <p class="text-star-white/60 mt-4">No recipes match your filters.</p>
+      <button (click)="clearFilters()" class="mt-4 text-nebula-violet hover:text-cosmic-blue">Clear filters</button>
+    </div>
+
+    <!-- Recipes Grid -->
+    <div *ngIf="!isLoading && filteredRecipes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <app-recipe-card *ngFor="let recipe of filteredRecipes" [recipe]="recipe" [isSaved]="isRecipeSaved(recipe.id)"
+        (save)="onSave(recipe.id)" (unsave)="onUnsave(recipe.id)">
+      </app-recipe-card>
+    </div>
+  </div>
+</div>

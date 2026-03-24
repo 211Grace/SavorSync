@@ -7,21 +7,19 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 
-// Shared Components
-import { HeaderComponent } from './shared/components/header/header.component';
-import { FooterComponent } from './shared/components/footer/footer.component';
+import { SharedModule } from './shared/shared.module';  // Import SharedModule
 
 @NgModule({
   declarations: [
-    AppComponent,
-    HeaderComponent,
-    FooterComponent
+    AppComponent
+    // HeaderComponent and FooterComponent removed - they're in SharedModule now
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    SharedModule  // SharedModule provides HeaderComponent, FooterComponent, etc.
   ],
   providers: [
     {

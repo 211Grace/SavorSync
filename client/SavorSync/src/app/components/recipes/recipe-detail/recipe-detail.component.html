@@ -1,1 +1,121 @@
-<p>recipe-detail works!</p>
+<div class="pt-20">
+  <div *ngIf="isLoading" class="flex justify-center items-center min-h-[60vh]">
+    <div class="animate-spin rounded-full h-12 w-12 border-4 border-nebula-violet border-t-transparent"></div>
+  </div>
+
+  <div *ngIf="!isLoading && recipe" class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Breadcrumb Navigation -->
+    <div class="mb-6 flex items-center gap-2 text-sm">
+      <a routerLink="/" class="text-nebula-violet hover:text-cosmic-blue flex items-center gap-1">
+        <i class="bi bi-house-door"></i> Home
+      </a>
+      <span class="text-star-white/40">›</span>
+      <a routerLink="/recipes" class="text-nebula-violet hover:text-cosmic-blue">
+        Recipes
+      </a>
+      <span class="text-star-white/40">›</span>
+      <span class="text-star-white/60">{{ recipe.name }}</span>
+    </div>
+
+   <!-- Hero Image and Title -->
+<div class="relative rounded-2xl overflow-hidden mb-8">
+  <img [src]="recipe.imageUrl" [alt]="recipe.name" class="w-full h-64 md:h-96 object-cover">
+  <div class="absolute inset-0 bg-gradient-to-t from-space-black to-transparent"></div>
+  
+  <!-- Heart Save Button -->
+  <button 
+    (click)="toggleSave()"
+    class="absolute top-4 right-4 w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm hover:bg-nebula-violet/80 flex items-center justify-center transition z-10"
+    [title]="isSaved ? 'Remove from saved' : 'Save recipe'">
+    <i [class]="isSaved ? 'bi bi-heart-fill text-pink-500 text-2xl' : 'bi bi-heart text-star-white text-2xl'"></i>
+  </button>
+  
+  <!-- Title Overlay -->
+  <div class="absolute bottom-0 left-0 p-6">
+    <div class="flex gap-2 mb-3">
+      <span class="px-3 py-1 rounded-full bg-nebula-violet text-star-white text-sm">{{ recipe.cuisineType }}</span>
+      <span class="px-3 py-1 rounded-full bg-space-black/50 text-star-white text-sm">{{ recipe.mood | titlecase }} Mood</span>
+    </div>
+    <h1 class="text-3xl md:text-5xl font-display text-star-white">{{ recipe.name }}</h1>
+    <div class="flex gap-4 mt-3 text-star-white/80">
+      <span><i class="bi bi-clock"></i> {{ recipe.prepTime + recipe.cookTime }} min</span>
+      <span><i class="bi bi-stars"></i> <span [class]="getDifficultyColor(recipe.difficulty)">{{ recipe.difficulty | titlecase }}</span></span>
+    </div>
+  </div>
+</div>
+
+    <!-- Music Pairing Section -->
+    <section *ngIf="recipe.musicPairing"
+      class="bg-space-black/50 rounded-2xl p-6 mb-8 backdrop-blur-sm border border-nebula-violet/30">
+      <h2 class="text-2xl font-display text-star-white mb-4 flex items-center gap-2">
+        <i class="bi bi-music-note-beamed text-nebula-violet"></i>
+        Sound Pairing
+      </h2>
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="bg-nebula-violet/20 rounded-full p-4">
+          <i class="bi bi-play-circle fs-1 text-nebula-violet text-4xl"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-star-white">{{ recipe.musicPairing.songTitle }}</h3>
+          <p class="text-star-white/60">{{ recipe.musicPairing.artist }} • {{ recipe.musicPairing.genre }}</p>
+          <p class="text-star-white/40 text-sm mt-1 italic">"{{ recipe.musicPairing.scienceExplanation }}"</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Science Facts Section -->
+    <section *ngIf="recipe.scienceFacts?.length"
+      class="bg-gradient-to-r from-deep-purple to-space-black rounded-2xl p-6 mb-8">
+      <h2 class="text-2xl font-display text-star-white mb-4 flex items-center gap-2">
+        <i class="bi bi-stars text-cosmic-orange"></i>
+        The Science Behind the Flavor
+      </h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div *ngFor="let fact of recipe.scienceFacts"
+          class="bg-star-white/5 rounded-lg p-4 hover:bg-star-white/10 transition">
+          <h3 class="text-nebula-violet font-semibold mb-2">{{ fact.title }}</h3>
+          <p class="text-star-white/70 text-sm">{{ fact.factText }}</p>
+          <p class="text-star-white/40 text-xs mt-2">Category: {{ fact.category }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ingredients & Instructions -->
+    <div class="grid md:grid-cols-2 gap-8">
+      <section class="bg-space-black/50 rounded-2xl p-6">
+        <h2 class="text-2xl font-display text-star-white mb-4">Ingredients</h2>
+        <ul class="space-y-2">
+          <li *ngFor="let ingredient of recipe.ingredients" class="flex items-center gap-2 text-star-white/80">
+            <i class="bi bi-circle-fill text-[8px] text-nebula-violet"></i>
+            {{ ingredient }}
+          </li>
+        </ul>
+      </section>
+
+      <section class="bg-space-black/50 rounded-2xl p-6">
+        <h2 class="text-2xl font-display text-star-white mb-4">Instructions</h2>
+        <ol class="space-y-4">
+          <li *ngFor="let instruction of recipe.instructions; let i = index" class="flex gap-3">
+            <span
+              class="w-6 h-6 rounded-full bg-nebula-violet text-star-white flex items-center justify-center text-sm font-bold">{{
+              i + 1 }}</span>
+            <span class="text-star-white/80">{{ instruction }}</span>
+          </li>
+        </ol>
+      </section>
+    </div>
+
+    <!-- Cook Mode Button -->
+    <div class="mt-8 text-center">
+      <a [routerLink]="['/cook-mode', recipe.id]"
+        class="inline-flex items-center gap-2 px-8 py-4 bg-nebula-gradient text-star-white rounded-full font-bold text-lg hover:scale-105 transition-transform">
+        <i class="bi bi-play-fill"></i> Start Cook Mode
+        <i class="bi bi-soundwave"></i>
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !recipe" class="text-center py-20">
+    <h2 class="text-2xl font-display text-star-white">Recipe not found</h2>
+    <a routerLink="/recipes" class="mt-4 inline-block text-nebula-violet hover:text-cosmic-blue">Back to Recipes</a>
+  </div>

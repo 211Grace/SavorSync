@@ -5,11 +5,10 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { RecipeListComponent } from './recipe-list/recipe-list.component';
 import { RecipeDetailComponent } from './recipe-detail/recipe-detail.component';
-import { RecipeCardComponent } from './recipe-card/recipe-card.component';
 import { RecipeFilterComponent } from './recipe-filter/recipe-filter.component';
 import { SavedRecipesComponent } from './saved-recipes/saved-recipes.component';
 
-import { LoadingSpinnerComponent } from 'src/app/shared/components/loading-spinner/loading-spinner.component';
+import { SharedModule } from '../../shared/shared.module';  // Import SharedModule
 
 const routes: Routes = [
   { path: '', component: RecipeListComponent },
@@ -21,7 +20,6 @@ const routes: Routes = [
   declarations: [
     RecipeListComponent,
     RecipeDetailComponent,
-    RecipeCardComponent,
     RecipeFilterComponent,
     SavedRecipesComponent
   ],
@@ -29,7 +27,7 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     RouterModule.forChild(routes),
-    LoadingSpinnerComponent
+    SharedModule  // Add SharedModule here instead of LoadingSpinnerComponent
   ]
 })
 export class RecipesModule { }

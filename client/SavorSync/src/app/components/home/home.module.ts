@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { HeroComponent } from './hero/hero.component';
@@ -8,7 +8,9 @@ import { FeaturedRecipesComponent } from './featured-recipes/featured-recipes.co
 import { MoodSelectorComponent } from './mood-selector/mood-selector.component';
 import { StatsComponent } from './stats/stats.component';
 
-const routes: Routes = [
+import { SharedModule } from '../../shared/shared.module';
+
+const routes = [
   { path: '', component: HomeComponent }
 ];
 
@@ -22,7 +24,8 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    SharedModule
   ]
 })
 export class HomeModule { }

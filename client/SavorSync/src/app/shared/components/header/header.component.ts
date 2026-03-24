@@ -7,9 +7,20 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
+  isDropdownOpen = false;
+
   constructor(public authService: AuthService) {}
+
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  closeDropdown(): void {
+    this.isDropdownOpen = false;
+  }
 
   logout(): void {
     this.authService.logout();
+    this.closeDropdown();
   }
 }

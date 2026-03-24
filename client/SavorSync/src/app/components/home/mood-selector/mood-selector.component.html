@@ -1,1 +1,8 @@
-<p>mood-selector works!</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+  <button
+    *ngFor="let mood of moods"
+    (click)="selectMood(mood.value)"
+    [ngClass]="getButtonClass(mood.value)">
+    {{ mood.icon }} {{ mood.name }}
+  </button>
+</div>

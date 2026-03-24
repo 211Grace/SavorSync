@@ -1,1 +1,63 @@
-<p>music-player works!</p>
+<div class="bg-nebula-violet/10 rounded-xl p-4">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-4">
+    <div class="animate-spin rounded-full h-6 w-6 border-2 border-nebula-violet border-t-transparent"></div>
+    <span class="ml-2 text-star-white/60 text-sm">Loading music...</span>
+  </div>
+  
+  <!-- Error State -->
+  <div *ngIf="error" class="text-cosmic-orange text-sm text-center py-2">
+    {{ error }}
+  </div>
+  
+  <!-- Player -->
+  <div *ngIf="!isLoading && pairing">
+    <div class="flex items-center gap-3 flex-wrap">
+      <!-- Play/Pause Button -->
+      <button (click)="togglePlay()" 
+        class="w-12 h-12 rounded-full bg-nebula-violet text-star-white flex items-center justify-center hover:bg-cosmic-blue transition shadow-lg flex-shrink-0">
+        <i [class]="isPlaying ? 'bi bi-pause-fill text-xl' : 'bi bi-play-fill text-xl'"></i>
+      </button>
+
+      <!-- Track Info -->
+      <div class="flex-1 min-w-[120px]">
+        <p class="text-star-white font-semibold text-sm sm:text-base truncate">{{ pairing.songTitle }}</p>
+        <p class="text-star-white/60 text-xs sm:text-sm truncate">{{ pairing.artist }}</p>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="flex-1 min-w-[150px]">
+        <input type="range" [value]="currentTime" [max]="duration || 180" (input)="seek($event)"
+          class="w-full h-1.5 bg-nebula-violet/30 rounded-lg appearance-none cursor-pointer">
+        <div class="flex justify-between text-xs text-star-white/40 mt-1">
+          <span>{{ formatTime(currentTime) }}</span>
+          <span>{{ formatTime(duration || 180) }}</span>
+        </div>
+      </div>
+
+      <!-- Volume Control -->
+      <div class="flex items-center gap-2">
+        <button (click)="toggleMute()" class="text-star-white/60 hover:text-star-white">
+          <i [class]="isMuted ? 'bi bi-volume-mute-fill' : 'bi bi-volume-up-fill'"></i>
+        </button>
+        <input type="range" [value]="volume * 100" (input)="changeVolume($event)" min="0" max="100"
+          class="w-20 h-1 bg-nebula-violet/30 rounded-lg appearance-none cursor-pointer">
+      </div>
+    </div>
+
+    <!-- Science Explanation -->
+    <div class="mt-3 pt-2 border-t border-nebula-violet/20">
+      <p class="text-star-white/40 text-xs italic">
+        <i class="bi bi-info-circle mr-1"></i> {{ pairing.scienceExplanation }}
+      </p>
+    </div>
+
+    <!-- External Link -->
+    <div *ngIf="pairing.embedUrl" class="mt-2 text-right">
+      <a [href]="pairing.embedUrl" target="_blank" 
+        class="text-star-white/30 text-xs hover:text-nebula-violet transition">
+        Listen on Jamendo <i class="bi bi-box-arrow-up-right"></i>
+      </a>
+    </div>
+  </div>
+</div>

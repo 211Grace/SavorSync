@@ -1,1 +1,122 @@
-<p>cook-mode works!</p>
+<div *ngIf="recipe" class="fixed inset-0 bg-space-black z-50 flex flex-col">
+    <!-- Header -->
+    <div
+        class="bg-space-black/80 backdrop-blur-md border-b border-nebula-violet/30 p-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <button (click)="exitCookMode()" class="text-star-white hover:text-nebula-violet transition">
+                <i class="bi bi-x-lg text-2xl"></i>
+            </button>
+            <h1 class="text-xl font-display text-star-white">{{ recipe.name }}</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <button (click)="togglePlayMusic()" class="text-star-white hover:text-nebula-violet transition">
+                <i [class]="isPlaying ? 'bi bi-pause-circle-fill text-2xl' : 'bi bi-play-circle-fill text-2xl'"></i>
+            </button>
+            <button (click)="toggleFullscreen()" class="text-star-white hover:text-nebula-violet transition">
+                <i [class]="isFullscreen ? 'bi bi-fullscreen-exit' : 'bi bi-fullscreen'"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        <!-- Left: Instructions -->
+        <div class="flex-1 p-8 overflow-y-auto">
+            <div class="max-w-2xl mx-auto">
+                <!-- Progress Indicator -->
+                <div class="mb-6">
+                    <p class="text-star-white/60 text-sm mb-2">Step {{ currentStep + 1 }} of {{
+                        recipe.instructions.length }}</p>
+                    <div class="h-2 bg-nebula-violet/20 rounded-full overflow-hidden">
+                        <div class="h-full bg-nebula-violet transition-all duration-300"
+                            [style.width]="((currentStep + 1) / recipe.instructions.length * 100) + '%'"></div>
+                    </div>
+                </div>
+
+                <!-- Current Instruction -->
+                <div class="bg-space-black/50 rounded-2xl p-8 border border-nebula-violet/30 mb-6">
+                    <h2 class="text-2xl font-display text-star-white mb-4">Step {{ currentStep + 1 }}</h2>
+                    <p class="text-star-white/80 text-lg leading-relaxed">{{ recipe.instructions[currentStep] }}</p>
+
+                    <!-- Timer Button (if applicable) -->
+                    <div class="mt-6">
+                        <button (click)="startTimer(5)"
+                            class="px-4 py-2 bg-nebula-violet/20 rounded-lg text-star-white hover:bg-nebula-violet/40 transition">
+                            <i class="bi bi-hourglass-split"></i> Set 5 min timer
+                        </button>
+                        <button (click)="startTimer(10)"
+                            class="ml-2 px-4 py-2 bg-nebula-violet/20 rounded-lg text-star-white hover:bg-nebula-violet/40 transition">
+                            <i class="bi bi-hourglass-split"></i> Set 10 min timer
+                        </button>
+                        <button (click)="startTimer(15)"
+                            class="ml-2 px-4 py-2 bg-nebula-violet/20 rounded-lg text-star-white hover:bg-nebula-violet/40 transition">
+                            <i class="bi bi-hourglass-split"></i> Set 15 min timer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Timer Display -->
+                <div *ngIf="showTimer"
+                    class="bg-nebula-violet/20 rounded-2xl p-6 text-center border border-nebula-violet/30 mb-6">
+                    <i class="bi bi-hourglass-top text-4xl text-nebula-violet"></i>
+                    <p class="text-3xl font-mono text-star-white mt-2">{{ formatTime(timerSeconds) }}</p>
+                    <button (click)="stopTimer()" class="mt-2 text-star-white/60 hover:text-star-white">Cancel
+                        Timer</button>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between gap-4">
+                    <button (click)="prevStep()" [disabled]="currentStep === 0"
+                        class="flex-1 py-3 rounded-xl border border-nebula-violet/50 text-star-white hover:bg-nebula-violet/20 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="bi bi-arrow-left"></i> Previous
+                    </button>
+                    <button (click)="nextStep()" [disabled]="currentStep === recipe.instructions.length - 1"
+                        class="flex-1 py-3 rounded-xl bg-nebula-violet text-star-white hover:bg-cosmic-blue transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Finish Button -->
+                <div *ngIf="currentStep === recipe.instructions.length - 1" class="mt-4">
+                    <button (click)="exitCookMode()"
+                        class="w-full py-3 rounded-xl bg-green-500/20 border border-green-500 text-green-500 hover:bg-green-500/30 transition">
+                        <i class="bi bi-check-circle"></i> Finish Cooking
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Ingredients & Music -->
+        <div class="w-full md:w-80 bg-space-black/30 border-l border-nebula-violet/30 p-6 overflow-y-auto">
+            <h3 class="text-lg font-display text-star-white mb-4">Ingredients</h3>
+            <ul class="space-y-2 mb-6">
+                <li *ngFor="let ingredient of recipe.ingredients"
+                    class="flex items-center gap-2 text-star-white/70 text-sm">
+                    <i class="bi bi-check-circle text-nebula-violet text-xs"></i>
+                    {{ ingredient }}
+                </li>
+            </ul>
+
+            <div *ngIf="recipe.musicPairing" class="mt-6 pt-6 border-t border-nebula-violet/30">
+                <h3 class="text-lg font-display text-star-white mb-4">Music Pairing</h3>
+                <div class="bg-nebula-violet/10 rounded-xl p-4">
+                    <p class="text-nebula-violet font-semibold">{{ recipe.musicPairing.songTitle }}</p>
+                    <p class="text-star-white/60 text-sm">{{ recipe.musicPairing.artist }}</p>
+                    <p class="text-star-white/40 text-xs mt-2 italic">{{ recipe.musicPairing.scienceExplanation }}</p>
+                </div>
+            </div>
+
+            <div *ngIf="recipe.scienceFacts && recipe.scienceFacts.length > 0"
+                class="mt-6 pt-6 border-t border-nebula-violet/30">
+                <h3 class="text-lg font-display text-star-white mb-4">Science Fact</h3>
+                <div class="bg-cosmic-orange/10 rounded-xl p-4">
+                    <p class="text-cosmic-orange text-sm">{{ recipe.scienceFacts[0].factText }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="!recipe" class="fixed inset-0 bg-space-black flex items-center justify-center">
+    <div class="animate-spin rounded-full h-12 w-12 border-4 border-nebula-violet border-t-transparent"></div>
+</div>
