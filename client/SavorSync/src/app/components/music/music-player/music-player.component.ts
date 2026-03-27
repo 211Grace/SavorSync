@@ -23,12 +23,19 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   constructor(private musicService: MusicService) {}
 
   ngOnInit(): void {
-    if (this.pairing?.musicUrl) {
-      this.initAudio();
-    } else if (this.mood) {
-      this.loadMusicForMood();
-    }
+  console.log('MusicPlayerComponent received pairing:', this.pairing);
+  console.log('MusicPlayerComponent received mood:', this.mood);
+  
+  if (this.pairing?.musicUrl) {
+    console.log('Music URL found:', this.pairing.musicUrl);
+    this.initAudio();
+  } else if (this.mood) {
+    console.log('No music URL, loading by mood:', this.mood);
+    this.loadMusicForMood();
+  } else {
+    console.log('No music data available');
   }
+}
 
   ngOnDestroy(): void {
     if (this.audio) {
@@ -124,4 +131,5 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
       this.audio.muted = this.isMuted;
     }
   }
+  
 }

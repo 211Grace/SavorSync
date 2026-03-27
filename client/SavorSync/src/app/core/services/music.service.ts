@@ -22,7 +22,7 @@ export interface JamendoTrack {
 export class MusicService {
   private readonly API_URL = 'https://api.jamendo.com/v3.0';
   private readonly API_KEY = 'f9404361'; // Your Jamendo API key
-  private readonly USE_REAL_API = true; // Set to false to always use mock data
+  private readonly USE_REAL_API = false; // Set to false to always use mock data
 
   // Mock music data (fallback when API fails)
   private mockMusic: Map<string, MusicPairing> = new Map([
@@ -76,50 +76,48 @@ export class MusicService {
   }
 
   searchMusicByMood(mood: string): Observable<MusicPairing> {
-    // Use real API if flag is true
-    if (this.USE_REAL_API) {
-      const searchTerm = this.getSearchTermByMood(mood);
-      console.log(`🎵 Searching Jamendo for: ${searchTerm} (mood: ${mood})`);
-      
-      return this.http.get<{ results: JamendoTrack[] }>(`${this.API_URL}/tracks/`, {
-        params: {
-          client_id: this.API_KEY,
-          format: 'json',
-          search: searchTerm,
-          limit: '3',
-          include: 'musicinfo',
-          audioformat: 'mp32'
-        }
-      }).pipe(
-        map(response => {
-          if (response.results && response.results.length > 0) {
-            const randomIndex = Math.floor(Math.random() * response.results.length);
-            const track = response.results[randomIndex];
-            console.log(`✅ Found track: ${track.name} by ${track.artist_name}`);
-            return {
-              songTitle: track.name,
-              artist: track.artist_name,
-              genre: this.getGenreByMood(mood),
-              mood: mood,
-              musicUrl: track.audio,
-              embedUrl: `https://www.jamendo.com/track/${track.id}`,
-              scienceExplanation: this.getScienceExplanation(mood)
-            };
-          }
-          console.log('No results found, using mock data');
-          return this.mockMusic.get(mood) || this.mockMusic.get('romantic')!;
-        }),
-        catchError(error => {
-          console.error('Jamendo API error:', error);
-          return of(this.mockMusic.get(mood) || this.mockMusic.get('romantic')!);
-        })
-      );
-    }
+  if (this.USE_REAL_API) {
+    const searchTerm = this.getSearchTermByMood(mood);
+    console.log(`🎵 Searching Jamendo for: ${searchTerm} (mood: ${mood})`);
     
-    // Use mock data
-    console.log('Using mock music data');
-    return of(this.mockMusic.get(mood) || this.mockMusic.get('romantic')!);
+    return this.http.get<{ results: JamendoTrack[] }>(`${this.API_URL}/tracks/`, {
+      params: {
+        client_id: this.API_KEY,
+        format: 'json',
+        search: searchTerm,
+        limit: '3',
+        include: 'musicinfo',
+        audioformat: 'mp32'
+      }
+    }).pipe(
+      map(response => {
+        console.log('API Response:', response);
+        if (response.results && response.results.length > 0) {
+          const track = response.results[0];
+          console.log('Track audio URL:', track.audio);
+          return {
+            songTitle: track.name,
+            artist: track.artist_name,
+            genre: this.getGenreByMood(mood),
+            mood: mood,
+            musicUrl: track.audio,
+            embedUrl: `https://www.jamendo.com/track/${track.id}`,
+            scienceExplanation: this.getScienceExplanation(mood)
+          };
+        }
+        console.log('No results found');
+        return this.mockMusic.get(mood) || this.mockMusic.get('romantic')!;
+      }),
+      catchError(error => {
+        console.error('Jamendo API error:', error);
+        return of(this.mockMusic.get(mood) || this.mockMusic.get('romantic')!);
+      })
+    );
   }
+  
+  console.log('Using mock music data (no API)');
+  return of(this.mockMusic.get(mood) || this.mockMusic.get('romantic')!);
+}
 
   searchMusic(query: string): Observable<JamendoTrack[]> {
     if (!this.USE_REAL_API) {

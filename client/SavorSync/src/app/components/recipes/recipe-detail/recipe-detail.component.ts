@@ -28,6 +28,8 @@ export class RecipeDetailComponent implements OnInit {
         this.checkIfSaved(id);
       }
     }
+      console.log('Recipe detail loaded, music pairing:', this.recipe?.musicPairing);
+
   }
 
   loadRecipe(id: string): void {
